@@ -1,53 +1,48 @@
-// ✅ Load Required Modules
 const express = require("express");
-const axios = require("axios");
+const https = require("https");
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// ✅ Configuration
-const PORT = process.env.PORT || 3000; // platform-assigned port
-const HOST = "0.0.0.0"; // ensures it binds to all interfaces (required for Render)
+const firebaseURL = "https://shadow-earnings-kaycee-default-rtdb.firebaseio.com/visits.json";
+const wallet = "0xC9e80D2F3148a25692Cc48a61d87D8d04FfFd5B2";
+const earningsPerPing = 0.0005;
 
-const dashboardURL = process.env.DASHBOARD_URL || "https://shadow-dashboard-kaycee.vercel.app";
-const PINGS_PER_MINUTE = parseInt(process.env.PING_RATE) || 1000000;
-const PINGS_PER_SECOND = Math.floor(PINGS_PER_MINUTE / 60);
-
-// ✅ Generate Random IP
-function randomIP() {
-  return `${rand(11, 190)}.${rand(10, 255)}.${rand(10, 255)}.${rand(10, 255)}`;
-}
-function rand(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-// ✅ Ghost Ping Function
-async function ghostPing(fakeIP) {
-  try {
-    await axios.get(dashboardURL, {
-      headers: {
-        "X-Forwarded-For": fakeIP,
-        "User-Agent": "Mozilla/5.0 (GhostBot)"
-      }
-    });
-    console.log(`✅ Ghost ping from ${fakeIP}`);
-  } catch (err) {
-    console.log(`❌ Ping failed from ${fakeIP}`);
-  }
-}
-
-// ✅ Ping Engine
-setInterval(() => {
-  for (let i = 0; i < PINGS_PER_SECOND; i++) {
-    ghostPing(randomIP());
-  }
-}, 1000);
-
-// ✅ Root Web Route (confirms server is live)
+// Just to keep Render app alive
 app.get("/", (req, res) => {
-  res.send("👻 Kaycee's Ghost Injector is LIVE and working!");
+  res.send("👻 Ghost Injector Active");
 });
 
-// ✅ Start the Server (THIS FIXES THE PORT ERROR)
-app.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`🌐 Server is running on http://0.0.0.0:${PORT}`);
 });
+
+// Ghost Ping Function
+function sendGhostPing() {
+  try {
+    const now = new Date().toISOString();
+    const data = JSON.stringify({
+      ip: "ghost",
+      time: now,
+      amount: earningsPerPing,
+      wallet: wallet,
+    });
+
+    const req = https.request(firebaseURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": data.length,
+      },
+    });
+
+    req.write(data);
+    req.end();
+    console.log("✅ Ghost Ping Sent at", now);
+  } catch (err) {
+    console.error("❌ Ghost Ping Failed", err);
+  }
+}
+
+// Every 100ms = ~600 pings per minute (safe)
+setInterval(sendGhostPing, 100);
