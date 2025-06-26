@@ -1,12 +1,23 @@
 {
   "name": "ghost-injector",
   "version": "1.0.0",
+  "description": "Kaycee's Shadow Ghost Injector that sends massive stealth pings to the earnings dashboard",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "axios": "^1.6.7"
-  }
+    "axios": "^1.6.7",
+    "express": "^4.19.2"
+  },
+  "keywords": [
+    "ghost",
+    "injector",
+    "shadow",
+    "ping",
+    "dashboard",
+    "earnings"
+  ],
+  "author": "Kaycee",
+  "license": "MIT"
 }
