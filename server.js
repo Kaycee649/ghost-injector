@@ -1,15 +1,18 @@
-// ✅ Load Required Libraries
+// ✅ Load Required Modules
 const express = require("express");
 const axios = require("axios");
 
 const app = express();
 
-// ✅ ENVIRONMENT VARIABLES (can be customized)
+// ✅ Configuration
+const PORT = process.env.PORT || 3000; // platform-assigned port
+const HOST = "0.0.0.0"; // ensures it binds to all interfaces (required for Render)
+
 const dashboardURL = process.env.DASHBOARD_URL || "https://shadow-dashboard-kaycee.vercel.app";
 const PINGS_PER_MINUTE = parseInt(process.env.PING_RATE) || 1000000;
 const PINGS_PER_SECOND = Math.floor(PINGS_PER_MINUTE / 60);
 
-// ✅ Generate Random Fake IPs
+// ✅ Generate Random IP
 function randomIP() {
   return `${rand(11, 190)}.${rand(10, 255)}.${rand(10, 255)}.${rand(10, 255)}`;
 }
@@ -17,7 +20,7 @@ function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-// ✅ Function to Send Fake Ping
+// ✅ Ghost Ping Function
 async function ghostPing(fakeIP) {
   try {
     await axios.get(dashboardURL, {
@@ -26,26 +29,25 @@ async function ghostPing(fakeIP) {
         "User-Agent": "Mozilla/5.0 (GhostBot)"
       }
     });
-    console.log(`✅ Ping sent from ${fakeIP}`);
+    console.log(`✅ Ghost ping from ${fakeIP}`);
   } catch (err) {
     console.log(`❌ Ping failed from ${fakeIP}`);
   }
 }
 
-// ✅ Repeat Ghost Pings Every Second
+// ✅ Ping Engine
 setInterval(() => {
   for (let i = 0; i < PINGS_PER_SECOND; i++) {
-    const fakeIP = randomIP();
-    ghostPing(fakeIP);
+    ghostPing(randomIP());
   }
 }, 1000);
 
-// ✅ Web Interface to Confirm Injector is Online
+// ✅ Root Web Route (confirms server is live)
 app.get("/", (req, res) => {
-  res.send("👻 Kaycee's Ghost Injector is LIVE and pinging the shadow dashboard!");
+  res.send("👻 Kaycee's Ghost Injector is LIVE and working!");
 });
 
-// ✅ Start Server & Listen on Platform Port
-const listener = app.listen(process.env.PORT || 3000, () => {
-  console.log("🚀 Injector running on port", listener.address().port);
+// ✅ Start the Server (THIS FIXES THE PORT ERROR)
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on http://${HOST}:${PORT}`);
 });
