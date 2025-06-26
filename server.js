@@ -2,8 +2,8 @@ const express = require("express");
 const axios = require("axios");
 const app = express();
 
-const dashboardURL = "https://shadow-dashboard-kaycee.vercel.app";
-const PINGS_PER_MINUTE = 1000000;
+const dashboardURL = process.env.DASHBOARD_URL || "https://shadow-dashboard-kaycee.vercel.app";
+const PINGS_PER_MINUTE = parseInt(process.env.PING_RATE) || 1000000;
 const PINGS_PER_SECOND = Math.floor(PINGS_PER_MINUTE / 60);
 
 function randomIP() {
@@ -35,7 +35,7 @@ setInterval(() => {
 }, 1000);
 
 app.get("/", (req, res) => {
-  res.send("👻 Mega Ghost Injector Running at 1M/minute!");
+  res.send("👻 Kaycee’s Ghost Injector is Online & Firing 1M pings/min!");
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
